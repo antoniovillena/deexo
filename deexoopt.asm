@@ -294,16 +294,16 @@ exgoit  ld      d, e
         jr      exloop
 
     IF  literals=1
+litcat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-excat   rl      c
-        ret     pe
-      ELSE
-excat   ret     po
+        rl      c
       ENDIF
-        ld      b, (hl)
-        dec     hl
-        ld      c, (hl)
-        dec     hl
+        ret     pe
+        ld      c, 1
+litca1  call    getbit
+        rl      c
+        rl      b
+        jr      nc, litca1
         jr      exseq
     ENDIF
 
