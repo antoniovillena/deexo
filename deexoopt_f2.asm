@@ -139,15 +139,14 @@ litcat
         rl      c
       ENDIF
         ret     pe
-        ld      c, 1
-litca1  add     a, a
-        jr      nz, litca2
-        ld      a, (hl)
-        inc     hl
-        adc     a, a
-litca2  rl      c
-        rl      b
-        jr      nc, litca1
+        push    de
+        ld      d, b
+        ld      e, b
+        ld      b, 16
+        call    getbits
+        ld      b, d
+        ld      c, e
+        pop     de
         ldir
         jr      mloop
 

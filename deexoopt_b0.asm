@@ -131,11 +131,12 @@ litcat
         rl      c
       ENDIF
         ret     pe
-        ld      c, 1
-litca1  call    getbit
-        rl      c
-        rl      b
-        jr      nc, litca1
+        push    de
+        ld      b, 16
+        call    getbits
+        ld      b, d
+        ld      c, e
+        pop     de
         jr      litseq
     ENDIF
 
