@@ -63,12 +63,7 @@ setbit  add     hl, hl
         dec     ixl
         djnz    init
         pop     de
-      IF  literals=1
-litcop  inc     c
-litseq  lddr
-      ELSE
 litcop  ldd
-      ENDIF
 mloop   add     a, a
         call    z, getbit
         jr      c, litcop
@@ -140,7 +135,8 @@ litca1  add     a, a
         rl      c
         rl      b
         jr      nc, litca1
-        jr      litseq
+        lddr
+        jr      mloop
     ENDIF
 
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135

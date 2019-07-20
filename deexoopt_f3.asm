@@ -73,13 +73,7 @@ setbit  add     hl, hl
         dec     ixl
         djnz    init
         pop     de
-      IF  literals=1
-        ld      c, b
-litcop  inc     c
-litseq  ldir
-      ELSE
 litcop  ldi
-      ENDIF
 mloop   add     a, a
         jr      z, gbm
         jr      c, litcop
@@ -187,7 +181,8 @@ litcat
         inc     hl
         ld      c, (hl)
         inc     hl
-        jr      litseq
+        ldir
+        jr      mloop
     ENDIF
 
 gbm     ld      a, (hl)
