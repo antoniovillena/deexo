@@ -74,7 +74,7 @@ setbit  add     hl, hl
         djnz    init
         pop     de
       IF  literals=1
-        ld      c, 0
+        ld      c, b
 litcop  inc     c
 litseq  ldir
       ELSE
