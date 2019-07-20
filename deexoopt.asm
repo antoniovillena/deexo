@@ -127,14 +127,14 @@ exsetb  add     hl, hl
         pop     de
   
     IF  back=1
-      IF  literals=1
+      IF  literals=1 AND speed=0
 exlit   inc     c
 exseq   lddr
       ELSE
 exlit   ldd
       ENDIF
     ELSE
-      IF  literals=1
+      IF  literals=1 AND speed=0
 exlit   inc     c
 exseq   ldir
       ELSE
@@ -294,17 +294,46 @@ exgoit  ld      d, e
         jr      exloop
 
     IF  literals=1
-litcat  
+excat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         rl      c
       ENDIF
         ret     pe
-        ld      c, 1
-litca1  call    getbit
-        rl      c
-        rl      b
-        jr      nc, litca1
+    IF  speed=3
+        ld      b, (hl)
+        IF  back=1
+        dec     hl
+        ELSE
+        inc     hl
+        ENDIF
+        ld      c, (hl)
+        IF  back=1
+        dec     hl
+        ELSE
+        inc     hl
+        ENDIF
+    ELSE
+        push    de
+      IF  speed=2
+        ld      d, b
+        ld      e, b
+      ENDIF
+        ld      b, 16
+        call    exgbts
+        ld      b, d
+        ld      c, e
+        pop     de
+    ENDIF
+      IF  speed=0
         jr      exseq
+      ELSE
+        IF  back=1
+        lddr
+        ELSE
+        ldir
+        ENDIF
+        jr      exloop
+      ENDIF
     ENDIF
 
     IF  speed=2 OR speed=3
