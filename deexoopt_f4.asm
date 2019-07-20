@@ -4,8 +4,7 @@
 ;Optimized by Antonio Villena and Urusergi
 ;
 ;Compression algorithm by Magnus Lind
-;   exomizer raw -P15 -T0 (literals=1)
-;   exomizer raw -P15 -T1 (literals=0)
+;   exomizer raw -P15 -T1
 ;
 ;   This depacker is free software; you can redistribute it and/or
 ;   modify it under the terms of the GNU Lesser General Public
