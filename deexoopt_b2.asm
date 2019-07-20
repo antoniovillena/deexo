@@ -144,8 +144,12 @@ litcat
       ENDIF
         ret     pe
         ld      c, 1
-litca1  call    getbit
-        rl      c
+litca1  add     a, a
+        jr      nz, litca2
+        ld      a, (hl)
+        inc     hl
+        adc     a, a
+litca2  rl      c
         rl      b
         jr      nc, litca1
         jr      litseq

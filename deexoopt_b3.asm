@@ -74,6 +74,7 @@ setbit  add     hl, hl
         djnz    init
         pop     de
       IF  literals=1
+        ld      c, 0
 litcop  inc     c
 litseq  lddr
       ELSE
@@ -181,11 +182,10 @@ litcat
         rl      c
       ENDIF
         ret     pe
-        ld      c, 1
-litca1  call    getbit
-        rl      c
-        rl      b
-        jr      nc, litca1
+        ld      b, (hl)
+        dec     hl
+        ld      c, (hl)
+        dec     hl
         jr      litseq
     ENDIF
 
