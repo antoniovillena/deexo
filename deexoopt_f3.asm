@@ -4,8 +4,10 @@
 ;Optimized by Antonio Villena and Urusergi
 ;
 ;Compression algorithm by Magnus Lind
-;   exomizer raw -P15 -T0 (literals=1)
-;   exomizer raw -P15 -T1 (literals=0)
+;   exomizer raw -P7 -T0 (literals=1, bitsalignstart=0)
+;   exomizer raw -P7 -T1 (literals=0, bitsalignstart=0)
+;   exomizer raw -P15 -T0 (literals=1, bitsalignstart=1)
+;   exomizer raw -P15 -T1 (literals=0, bitsalignstart=1)
 ;
 ;   This depacker is free software; you can redistribute it and/or
 ;   modify it under the terms of the GNU Lesser General Public
@@ -26,7 +28,12 @@
       ELSE
         ld      iy, (mapbase+16)/256*256+112
       ENDIF
+      IF bitsalignstart=0
+        ld      a, (hl)
+        inc     hl
+      ELSE
         ld      a, 128
+      ENDIF
         ld      b, 52
         push    de
         cp      a
