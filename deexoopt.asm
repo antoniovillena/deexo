@@ -24,10 +24,10 @@
 ;   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ;
 ; SIZE        speed 0   speed 1   speed 2   speed 3   range88-ef
-; forw nolit      148       150       167       204       +2
-; back nolit      146       148       165       202       +2
-; forw liter      158       160       177       214       +3
-; back liter      156       158       175       212       +3
+; forw nolit      152       154       171       208       +2
+; back nolit      150       152       169       206       +2
+; forw liter      167       170       189       219       +3
+; back liter      165       168       187       217       +3
 ;        output  deexoopt.bin
 ;        define  mapbase  $5b00
 ;        define  speed    3
@@ -223,19 +223,25 @@ exgbic  inc     c
     ENDIF
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+48
         dec     e
         jr      z, exgoit
         dec     e
-        ld      bc, 1024+32
+dontgo  ld      bc, 1024+32
         jr      z, exgoit
         ld      c, 16
       ELSE
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+160
         dec     e
         jr      z, exgoit
         dec     e
-        ld      bc, 1024+144
+dontgo  ld      bc, 1024+144
         jr      z, exgoit
         ld      c, 128
       ENDIF
