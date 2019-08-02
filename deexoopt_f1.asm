@@ -133,9 +133,11 @@ goit    call    getbits
     IF  literals=1
 litcat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      c
-      ENDIF
+        bit     0, c
+        ret     z
+      ELSE
         ret     pe
+      ENDIF
         push    de
         ld      b, 16
         call    getbits
