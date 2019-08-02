@@ -312,9 +312,11 @@ exgoit  ld      d, e
     IF  literals=1
 excat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      c
-      ENDIF
+        bit     0, c
+        ret     z
+      ELSE
         ret     pe
+      ENDIF
     IF  speed=3
         ld      b, (hl)
         IF  back=1
@@ -373,7 +375,7 @@ exgbi   ld      a, (hl)
     ENDIF
     IF  speed=3
 exgbts  jp      p, exlee8
-        rl      b
+        sla     b
         jr      z, exgby
         srl     b
         defb    250
