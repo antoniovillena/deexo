@@ -148,7 +148,6 @@ gbic    inc     c
       ENDIF
         add     iy, bc
         ld      c, b
-      ENDIF
     ENDIF
 
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
