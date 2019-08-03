@@ -132,8 +132,8 @@ gbic    inc     c
       ELSE
         ret     m
       ENDIF
-        ccf
     ENDIF
+        ccf
         push    de
 
     IFNDEF HD64180
