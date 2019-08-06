@@ -96,11 +96,14 @@ gbic    and     a
         adc     a, d
         ld      d, a
         push    de
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+32
         dec     e
         jr      z, goit
         dec     e
-        ld      bc, 1024+16
+dontgo  ld      bc, 1024+16
         jr      z, goit
         ld      c, 0
         ld      e, c

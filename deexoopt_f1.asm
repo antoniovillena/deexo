@@ -95,19 +95,25 @@ getind  add     a, a
         call    getpair
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+48
         dec     e
         jr      z, goit
         dec     e
-        ld      bc, 1024+32
+dontgo  ld      bc, 1024+32
         jr      z, goit
         ld      c, 16
       ELSE
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+160
         dec     e
         jr      z, goit
         dec     e
-        ld      bc, 1024+144
+dontgo  ld      bc, 1024+144
         jr      z, goit
         ld      c, 128
       ENDIF
@@ -127,9 +133,11 @@ goit    call    getbits
     IF  literals=1
 litcat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      c
-      ENDIF
+        bit     0, c
+        ret     z
+      ELSE
         ret     pe
+      ENDIF
         push    de
         ld      b, 16
         call    getbits

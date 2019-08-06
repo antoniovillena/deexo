@@ -4,10 +4,14 @@
 ;Optimized by Antonio Villena and Urusergi
 ;
 ;Compression algorithm by Magnus Lind
-;   exomizer raw -P13 -T0 [-b] (speed<3, literals=1)
-;   exomizer raw -P13 -T1 [-b] (speed<3, literals=0)
-;   exomizer raw -P15 -T0 [-b] (speed=3, literals=1)
-;   exomizer raw -P15 -T1 [-b] (speed=3, literals=0)
+;   exomizer raw -P5 -T0 [-b] (speed<3, literals=1, bitsalignstart=0)
+;   exomizer raw -P5 -T1 [-b] (speed<3, literals=0, bitsalignstart=0)
+;   exomizer raw -P7 -T0 [-b] (speed=3, literals=1, bitsalignstart=0)
+;   exomizer raw -P7 -T1 [-b] (speed=3, literals=0, bitsalignstart=0)
+;   exomizer raw -P13 -T0 [-b] (speed<3, literals=1, bitsalignstart=1)
+;   exomizer raw -P13 -T1 [-b] (speed<3, literals=0, bitsalignstart=1)
+;   exomizer raw -P15 -T0 [-b] (speed=3, literals=1, bitsalignstart=1)
+;   exomizer raw -P15 -T1 [-b] (speed=3, literals=0, bitsalignstart=1)
 ;
 ;   This depacker is free software; you can redistribute it and/or
 ;   modify it under the terms of the GNU Lesser General Public
@@ -24,21 +28,27 @@
 ;   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ;
 ; SIZE        speed 0   speed 1   speed 2   speed 3   range88-ef
-; forw nolit      148       150       167       204       +2
-; back nolit      146       148       165       202       +2
-; forw liter      158       160       177       214       +3
-; back liter      156       158       175       212       +3
+; forw nolit      152       154       171       208       +2
+; back nolit      150       152       169       206       +2
+; forw liter      167       170       189       219       +3
+; back liter      165       168       187       217       +3
 ;        output  deexoopt.bin
 ;        define  mapbase  $5b00
 ;        define  speed    3
 ;        define  back     0
 ;        define  literals 0
+;        define  bitsalignstart 1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      iy, 256+mapbase/256*256
       ELSE
         ld      iy, (mapbase+16)/256*256+112
       ENDIF
+      IF bitsalignstart=0
+        ld      a, (hl)
+        inc     hl
+      ELSE
         ld      a, 128
+      ENDIF
         ld      b, 52
         push    de
         cp      a
@@ -223,19 +233,25 @@ exgbic  inc     c
     ENDIF
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+48
         dec     e
         jr      z, exgoit
         dec     e
-        ld      bc, 1024+32
+dontgo  ld      bc, 1024+32
         jr      z, exgoit
         ld      c, 16
       ELSE
+        inc     d
+        dec     d
+        jr      nz, dontgo
         ld      bc, 512+160
         dec     e
         jr      z, exgoit
         dec     e
-        ld      bc, 1024+144
+dontgo  ld      bc, 1024+144
         jr      z, exgoit
         ld      c, 128
       ENDIF
@@ -296,9 +312,11 @@ exgoit  ld      d, e
     IF  literals=1
 excat  
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      c
-      ENDIF
+        bit     0, c
+        ret     z
+      ELSE
         ret     pe
+      ENDIF
     IF  speed=3
         ld      b, (hl)
         IF  back=1
@@ -357,7 +375,7 @@ exgbi   ld      a, (hl)
     ENDIF
     IF  speed=3
 exgbts  jp      p, exlee8
-        rl      b
+        sla     b
         jr      z, exgby
         srl     b
         defb    250
