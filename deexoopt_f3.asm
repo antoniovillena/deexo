@@ -6,8 +6,8 @@
 ;Compression algorithm by Magnus Lind
 ;   exomizer raw -P7 -T0 (literals=1, bitsalignstart=0)
 ;   exomizer raw -P7 -T1 (literals=0, bitsalignstart=0)
-;   exomizer raw -P15 -T0 (literals=1, bitsalignstart=1)
-;   exomizer raw -P15 -T1 (literals=0, bitsalignstart=1)
+;   exomizer raw -P15 -T0 (literals=1)
+;   exomizer raw -P15 -T1 (literals=0)
 ;
 ;   This depacker is free software; you can redistribute it and/or
 ;   modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,9 @@
 ;   License along with this library; if not, write to the Free Software
 ;   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ;
+      IFNDEF bitsalignstart
+        DEFINE bitsalignstart 1
+      ENDIF
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      iy, 256+mapbase/256*256
       ELSE
@@ -34,11 +37,8 @@
 
         ld      bc, 52 * 256 + 16
 
-      IF bitsalignstart=0
         or      a       ;reset CF
-      ELSE
-        ;scf             ;set CF
-        or      a       ;reset CF
+      IF bitsalignstart=1
         ld      a, 128
         defb    218     ;218=0DAh;JP C,nnnn
       ENDIF
@@ -97,8 +97,6 @@ get5:   dec     a
         or      a       ;reset CF
         djnz    get4
 
-        ;pop     de
-        ;ret
         jr      litcop
 
 gbm     ld      a, (hl)
@@ -133,12 +131,12 @@ gbic    inc     c
         ret     m
       ENDIF
     ENDIF
-        ccf
         push    de
 
     IFNDEF HD64180
         ld      iyl, c
         ld      c, 0
+        or      a
     ELSE
         ld      b,0
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
