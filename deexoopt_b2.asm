@@ -139,8 +139,7 @@ litcat
       ENDIF
         ret     pe
         push    de
-        ld      d, b
-        ld      e, b
+        ld      de, 0
         ld      b, 16
         call    getbits
         ld      b, d

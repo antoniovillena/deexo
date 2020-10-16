@@ -315,8 +315,7 @@ excat
     ELSE
         push    de
       IF  speed=2
-        ld      d, b
-        ld      e, b
+        ld      de, 0
       ENDIF
         ld      b, 16
         call    exgbts
