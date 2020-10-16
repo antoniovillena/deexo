@@ -4,8 +4,10 @@
 ;Optimized by Antonio Villena and Urusergi
 ;
 ;Compression algorithm by Magnus Lind
-;   exomizer raw -P13 -T0 -b (literals=1)
-;   exomizer raw -P13 -T1 -b (literals=0)
+;   exomizer raw -P13 -T0 -b (literals=1) (reuse=0)
+;   exomizer raw -P13 -T1 -b (literals=0) (reuse=0)
+;   exomizer raw -P45 -T0 -b (literals=1) (reuse=1)
+;   exomizer raw -P45 -T1 -b (literals=0) (reuse=1)
 ;
 ;   This depacker is free software; you can redistribute it and/or
 ;   modify it under the terms of the GNU Lesser General Public
@@ -61,20 +63,47 @@ setbit  add     hl, hl
         pop     hl
         dec     ixl
         djnz    init
-        pop     de
-      IF  literals=1
-litcop  inc     c
-litseq  lddr
-      ELSE
-litcop  ldd
+      IF  reuse=1
+        push    iy
+        pop     ix
       ENDIF
+        pop     de
+  IF  literals=1
+litcop  
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        rl      (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+    ENDIF
+        inc     c
+litseq  lddr
+  ELSE
+litcop  
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        rl      (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+    ENDIF
+        ldd
+  ENDIF
 mloop   call    getbit
         jr      c, litcop
+    IF  reuse=1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        ld      c, 256-1
+        rl      (ix-152+mapbase-mapbase/256*256)
       ELSE
-        ld      c, 112-1
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
       ENDIF
+    ENDIF
+    IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        ld      c, 256-1
+    ELSE
+        ld      c, 112-1
+    ENDIF
 getind  call    getbit
         inc     c
         jr      nc, getind
@@ -113,11 +142,30 @@ getind  call    getbit
         jr      z, goit
         ld      c, 128
       ENDIF
-goit    call    getbits
+goit    
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        ld      e, (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        ld      e, (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+        bit     1, e
+        jr      z, aqui
+        bit     2, e
+        jr      nz, aqui
+        call    getbit
+        ld      de, (mapbase+156)
+        jr      c, caof
+aqui    
+    ENDIF
+        call    getbits
         ld      iyl, c
         add     iy, de
         call    getpair
-        pop     bc
+      IF  reuse=1
+        ld      (mapbase+156), de
+      ENDIF
+caof    pop     bc
         ex      (sp), hl
         ex      de, hl
         add     hl, de
