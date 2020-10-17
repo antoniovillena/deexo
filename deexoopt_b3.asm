@@ -74,12 +74,19 @@ setbit  add     hl, hl
         pop     hl
         dec     ixl
         djnz    init
-      IF  reuse=1
+    IF  reuse=1
         push    iy
         pop     ix
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        ld      (ix-152+mapbase-mapbase/256*256), 1
+      ELSE
+        ld      (ix-6+mapbase-(mapbase+16)/256*256), 1
       ENDIF
+        scf
+    ENDIF
         pop     de
-litcop
+litcop  ldd
+mloo1
     IF  reuse=1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         rl      (ix-152+mapbase-mapbase/256*256)
@@ -87,7 +94,6 @@ litcop
         rl      (ix-6+mapbase-(mapbase+16)/256*256)
       ENDIF
     ENDIF
-        ldd
 mloop   add     a, a
       IF  reuse=0
         jr      z, gbm
@@ -100,13 +106,6 @@ gbm
       ENDIF
         jr      c, litcop
 gbmc    
-    IF  reuse=1
-      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      (ix-152+mapbase-mapbase/256*256)
-      ELSE
-        rl      (ix-6+mapbase-(mapbase+16)/256*256)
-      ENDIF
-    ENDIF
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      c, 256-1
       ELSE
@@ -150,6 +149,14 @@ gbic    inc     c
         ld      b, (iy-8+mapbase-(mapbase+16)/256*256)
       ENDIF
         add     hl, bc
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        rl      (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+        and     a
+    ENDIF
         ex      de, hl
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
@@ -233,17 +240,12 @@ litcat
         dec     hl
         lddr
       IF  reuse=0
-        jr      mloop
+        jr      mloo1
       ELSE
-        jp      mloop
+        scf
+        jp      mloo1
       ENDIF
     ENDIF
-
-gba     ld      a, (hl)
-        dec     hl
-        adc     a, a
-        jr      nc, aqui
-        jp      caof
 
 gbi     ld      a, (hl)
         dec     hl
@@ -256,6 +258,12 @@ gbm     ld      a, (hl)
         adc     a, a
         jr      nc, gbmc
         jp      litcop
+      ELSE
+gba     ld      a, (hl)
+        dec     hl
+        adc     a, a
+        jr      nc, aqui
+        jp      caof
       ENDIF
 
 getbits jp      p, lee8

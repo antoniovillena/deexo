@@ -199,17 +199,19 @@ litcat
         ld      c, e
         pop     de
       IF  reuse=1
-        ccf
+        scf
       ENDIF
         lddr
         jr      mloo1
     ENDIF
 
+      IF  reuse=1
 gba     ld      a, (hl)
         dec     hl
         adc     a, a
         jr      nc, aqui
         jp      caof
+      ENDIF
 
 gbm     ld      a, (hl)
         dec     hl
