@@ -64,12 +64,19 @@ setbit  add     hl, hl
         pop     hl
         dec     ixl
         djnz    init
-      IF  reuse=1
+    IF  reuse=1
         push    iy
         pop     ix
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        ld      (ix-152+mapbase-mapbase/256*256), 1
+      ELSE
+        ld      (ix-6+mapbase-(mapbase+16)/256*256), 1
       ENDIF
+        scf
+    ENDIF
         pop     de
-litcop  
+litcop  ldd
+mloo1
     IF  reuse=1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         rl      (ix-152+mapbase-mapbase/256*256)
@@ -77,17 +84,9 @@ litcop
         rl      (ix-6+mapbase-(mapbase+16)/256*256)
       ENDIF
     ENDIF
-        ldd
 mloop   add     a, a
         call    z, getbit
         jr      c, litcop
-    IF  reuse=1
-      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      (ix-152+mapbase-mapbase/256*256)
-      ELSE
-        rl      (ix-6+mapbase-(mapbase+16)/256*256)
-      ENDIF
-    ENDIF
     IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      c, 256-1
     ELSE
@@ -114,6 +113,13 @@ getind  add     a, a
         push    de
         ld      iyl, c
         call    getpair
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        rl      (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+    ENDIF
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      bc, 512+48
@@ -177,7 +183,10 @@ litcat
         ld      c, e
         pop     de
         lddr
-        jr      mloop
+      IF  reuse=1
+        scf
+      ENDIF
+        jr      mloo1
     ENDIF
 
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135

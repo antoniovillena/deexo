@@ -96,8 +96,9 @@ mloop   add     a, a
         ld      a, (hl)
         inc     hl
         adc     a, a
+gbm 
       ENDIF
-gbm     jr      c, litcop
+        jr      c, litcop
 gbmc    
     IF  reuse=1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135

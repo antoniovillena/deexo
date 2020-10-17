@@ -68,12 +68,19 @@ setbit  add     hl, hl
         pop     hl
         dec     ixl
         djnz    init
-      IF  reuse=1
+    IF  reuse=1
         push    iy
         pop     ix
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        ld      (ix-152+mapbase-mapbase/256*256), 1
+      ELSE
+        ld      (ix-6+mapbase-(mapbase+16)/256*256), 1
       ENDIF
+        scf
+    ENDIF
         pop     de
-litcop  
+litcop  ldd
+mloo1
     IF  reuse=1
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         rl      (ix-152+mapbase-mapbase/256*256)
@@ -81,18 +88,10 @@ litcop
         rl      (ix-6+mapbase-(mapbase+16)/256*256)
       ENDIF
     ENDIF
-        ldd
 mloop   add     a, a
         jr      z, gbm
         jr      c, litcop
 gbmc    
-    IF  reuse=1
-      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
-        rl      (ix-152+mapbase-mapbase/256*256)
-      ELSE
-        rl      (ix-6+mapbase-(mapbase+16)/256*256)
-      ENDIF
-    ENDIF
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      c, 256-1
       ELSE
@@ -121,6 +120,14 @@ gbic    inc     c
         ld      iyl, c
         ld      de, 0
         call    getpair
+    IF  reuse=1
+      IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
+        rl      (ix-152+mapbase-mapbase/256*256)
+      ELSE
+        rl      (ix-6+mapbase-(mapbase+16)/256*256)
+      ENDIF
+        and     a
+    ENDIF
         push    de
       IF  mapbase-mapbase/256*256<240 AND mapbase-mapbase/256*256>135
         ld      bc, 512+48
@@ -166,8 +173,11 @@ goit    ld      d, e
         call    getpair
       IF  reuse=1
         ld      (mapbase+156), de
+caof    and     a
+      ELSE
+caof
       ENDIF
-caof    pop     bc
+        pop     bc
         ex      (sp), hl
         ex      de, hl
         add     hl, de
@@ -188,8 +198,11 @@ litcat
         ld      b, d
         ld      c, e
         pop     de
+      IF  reuse=1
+        ccf
+      ENDIF
         lddr
-        jr      mloop
+        jr      mloo1
     ENDIF
 
 gba     ld      a, (hl)
